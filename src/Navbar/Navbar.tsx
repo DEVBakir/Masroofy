@@ -31,7 +31,7 @@ const items = [
 function DesktopNavbar() {
     return (
         <div className="border-separate border-b bg-background hidden md:flex justify-center">
-            <nav className="container flex items-center justify-between px-8">
+            <nav className="container flex items-center justify-between lg:px-0 px-2">
                 <div className="flex w-full h-[80px] min-h-[60px] items-center justify-between gap-x-4">
                     <div className="flex h-full items-center gap-2">
                         <Logo />
@@ -133,7 +133,7 @@ function MobileNavbar() {
 
     return (
         <div className="block border-separate bg-background md:hidden">
-            <nav className="container flex items-center justify-between sm:px-8 px-5 m-auto">
+            <nav className="container flex items-center justify-between sm:px-0 px-2 m-auto">
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                     <SheetTrigger asChild>
                         <Button variant={"ghost"} size={"icon"}>

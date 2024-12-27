@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,16 +19,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Currencies, Currency } from "@/lib/currencies"
-import SkeletonWrapper from "./SkeleonWrapper"
-import { useQuery } from "@tanstack/react-query"
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query"
 import supabaseClient from "@/config/supabaseClient"
 import { UserSettings } from "@/schema"
+import { useEffect, useState } from "react"
 
 
 export function CurrencyComboBox() {
-  const [open, setOpen] = React.useState(false)
+  // Test
+  const user_id = "39e34f1f-6d09-4eca-9cdd-3e01e52a3c55"
+  const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const [selectedOption, setSelectedOption] = React.useState<Currency | null>(
+  const [selectedOption, setSelectedOption] = useState<Currency | null>(
     Currencies[0]
   )
 
@@ -50,11 +50,34 @@ export function CurrencyComboBox() {
     },
   });
 
+  async function updateUserSettings() {
+    if (!selectedOption) return;
+
+    try {
+      // Upsert the user's settings
+      const { error } = await supabaseClient
+        .from("UserSettings")
+        .upsert({ user_id, currency: selectedOption.value });
+
+      if (error) {
+        console.error("Error updating user settings:", error.message);
+      } else {
+        console.log("User settings updated successfully.");
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  }
+
+  useEffect(()=> {
+    updateUserSettings();
+  },[selectedOption])
+
   if (isDesktop) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start">
+            <Button variant="outline" className="w-full justify-start font-semibold">
               {selectedOption ? <>{selectedOption.label}</> : <>+ Set currency</>}
             </Button>
           </PopoverTrigger>
@@ -68,7 +91,7 @@ export function CurrencyComboBox() {
   return (
       <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="w-full justify-start">
+        <Button variant="outline" className="w-full justify-start font-semibold">
           {selectedOption ? <>{selectedOption.label}</> : <>+ Set currency</>}
         </Button>
       </DrawerTrigger>

@@ -4,19 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import supabaseClient from "@/config/supabaseClient"
 import { Link } from "react-router-dom"
-import { useQuery } from "@tanstack/react-query"
 
 type Props = {}
 
 function Welcome({}: Props) {
-  async function UserSettingsFetch() {
-    const { data, error } = await supabaseClient
-    .from("UserSettings")
-    .select("*")
-    .eq("user_id", "39e34f1f-6d09-4eca-9cdd-3e01e52a3c55");
-    console.log(data);
-  }
-  UserSettingsFetch();
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center">
       <div className="container flex max-w-2xl flex-col items-center justify-between gap-4 px-5 md:px-0">
