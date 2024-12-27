@@ -7,3 +7,8 @@ interface ImportMetaEnv {
     readonly env: ImportMetaEnv;
   }
   
+  declare module '*.css' {
+    const content: any;
+    export default content;
+  }
+  
