@@ -2,22 +2,27 @@ import { CurrencyComboBox } from "@/components/CurrencyComboBox"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import supabaseClient from "@/config/supabaseClient"
 import { Link } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 
 type Props = {}
 
 function Welcome({}: Props) {
-  const user = {
-    id: "2",
-    firstName: "bakir"
+  async function UserSettingsFetch() {
+    const { data, error } = await supabaseClient
+    .from("UserSettings")
+    .select("*")
+    .eq("user_id", "39e34f1f-6d09-4eca-9cdd-3e01e52a3c55");
+    console.log(data);
   }
-
+  UserSettingsFetch();
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center">
       <div className="container flex max-w-2xl flex-col items-center justify-between gap-4 px-5 md:px-0">
         <div>
           <h1 className="text-center text-3xl">
-            Welcome, <span className="ml-2 font-bold capitalize">{user.firstName}  👋</span>
+            Welcome, <span className="ml-2 font-bold capitalize">Bakir  👋</span>
           </h1>
           <h2 className="mt-4 text-center text-base text-muted-foreground">
             Let 's get started by setting up your currency

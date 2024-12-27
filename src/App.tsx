@@ -1,4 +1,3 @@
-import './App.css'
 import { ThemeProvider } from "./components/provider/theme-provider"
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import Navbar from './Navbar/Navbar'
@@ -6,7 +5,6 @@ import Dashboard from './pages/Dashboard';
 import Welcome from './pages/Welcome';
 
 function App() {
-
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
     <BrowserRouter>
