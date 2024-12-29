@@ -23,11 +23,14 @@ import { QueryClient, useMutation, useQuery } from "@tanstack/react-query"
 import supabaseClient from "@/config/supabaseClient"
 import { UserSettings } from "@/schema"
 import { useEffect, useState } from "react"
+import { useAuth } from "../auth/AuthContext";
 
 
 export function CurrencyComboBox() {
+
+  const { user, loading } = useAuth(); 
   // Test
-  const user_id = "39e34f1f-6d09-4eca-9cdd-3e01e52a3c55"
+  const user_id = user?.id
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [selectedOption, setSelectedOption] = useState<Currency | null>(
@@ -40,7 +43,7 @@ export function CurrencyComboBox() {
       const { data, error } = await supabaseClient
         .from("UserSettings")
         .select("*")
-        .eq("user_id", "39e34f1f-6d09-4eca-9cdd-3e01e52a3c55");
+        .eq("user_id", user_id);
   
       if (error) {
         throw new Error(error.message);

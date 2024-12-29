@@ -2,18 +2,28 @@ import { CurrencyComboBox } from "@/components/CurrencyComboBox"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import supabaseClient from "@/config/supabaseClient"
 import { Link } from "react-router-dom"
+import { useAuth } from "../auth/AuthContext"
 
 type Props = {}
 
 function Welcome({}: Props) {
+  const { user, loading, error } = useAuth(); // Get user, loading, and error from context
+
+  if (loading) {
+    return <div>Loading...</div>; // Optionally show a loading spinner or message
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // Optionally handle errors
+  }
+
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center">
       <div className="container flex max-w-2xl flex-col items-center justify-between gap-4 px-5 md:px-0">
         <div>
           <h1 className="text-center text-3xl">
-            Welcome, <span className="ml-2 font-bold capitalize">Bakir  👋</span>
+            Welcome, <span className="ml-2 font-bold capitalize">{user?.user_metadata?.name || user?.email?.split('@')[0]} 👋</span>
           </h1>
           <h2 className="mt-4 text-center text-base text-muted-foreground">
             Let 's get started by setting up your currency
