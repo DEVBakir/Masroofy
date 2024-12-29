@@ -5,13 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "./Loading";
 import { Button } from "@/components/ui/button";
 import CreateTransactionDialog from "@/components/CreateTransactionDialog";
+import { useAuth } from "../auth/AuthContext"
 
 type Props = {};
 
 function Dashboard({}: Props) {
   const navigate = useNavigate();
+  const { user, loading } = useAuth(); 
 
-  const user_id = "39e34f1f-6d09-4eca-9cdd-3e01e52a3c55";
+  const user_id = user?.id;
 
   const { data: userSettings, error, isLoading } = useQuery<UserSettings | null>({
     queryKey: ["userSettings", user_id],
@@ -47,7 +49,7 @@ function Dashboard({}: Props) {
     <div className="h-full bg-background">
       <div className="border-b bg-card">
         <div className="container flex flex-wrap items-center justify-between gap-6 py-8 mx-auto px-4 lg:px-0">
-          <p className="sm:text-3xl text-2xl font-bold">Hello, Bakir 👋</p>
+          <p className="sm:text-3xl text-2xl font-bold">Hello, {user?.user_metadata?.name || user?.email?.split('@')[0]} 👋</p>
           <div className="flex items-center gap-3">
             <CreateTransactionDialog trigger={
                 <Button variant={"outline"} className="border-emerald-500 bg-emerald-950 text-white hover:bg-emerald-700 hover:text-white">

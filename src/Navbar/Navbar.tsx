@@ -163,7 +163,7 @@ function UserNav({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={onLogout} style={{ textAlign: 'center' }}>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={onLogout} style={{ textAlign: 'center' , cursor:'pointer' }}>Logout</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
       </DropdownMenuContent>
