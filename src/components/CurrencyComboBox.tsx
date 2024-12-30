@@ -57,7 +57,6 @@ export function CurrencyComboBox() {
     if (!selectedOption) return;
 
     try {
-      // Upsert the user's settings
       const { error } = await supabaseClient
         .from("UserSettings")
         .upsert({ user_id, currency: selectedOption.value });

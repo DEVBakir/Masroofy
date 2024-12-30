@@ -9,12 +9,13 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } fr
 import { Input } from "./ui/input"
 import { useQuery } from "@tanstack/react-query"
 import supabaseClient from "@/config/supabaseClient"
-import { Popover, PopoverTrigger } from "./ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Button } from "./ui/button"
 import { Category } from "@/schema"
-import { PopoverContent } from "@radix-ui/react-popover"
-import { Command } from "lucide-react"
-import { CommandInput } from "cmdk"
+import { Command } from "./ui/command"
+import { CommandInput } from "./ui/command"
+import { useAuth } from "../auth/AuthContext"
+import CreateCategoryDialog from "./CreateCategoryDialog"
 
 type Props = {
     trigger: ReactNode,
@@ -29,7 +30,8 @@ const createTransactionSchema = z.object({
     type: z.enum(["income", "expense"]),
   });
   
-  export type CreateTransactionSchema = z.infer<typeof createTransactionSchema>;
+type CreateTransactionSchema = z.infer<typeof createTransactionSchema>;
+
 function CreateTransactionDialog({ trigger, type }: Props) {
     const form = useForm<CreateTransactionSchema>({
         resolver: zodResolver(createTransactionSchema),
@@ -116,11 +118,13 @@ function CategoryPicker ({ type }:{type:TransactionType,}) {
 
     const [open , setOpen] = useState(false);
     const [value, setValue] = useState("");
+    const { user } = useAuth(); 
 
     const categories = useQuery({
         queryKey: ["categories",type],
         queryFn: async () =>{
-            const {data,error} = await  supabaseClient.from("Category").select("*").eq("user_id", "39e34f1f-6d09-4eca-9cdd-3e01e52a3c55");
+            const {data,error} = await  supabaseClient.from("Category").select("*").eq("user_id", user?.id);
+            console.log(data);
             
             if(error)
                 throw new Error("Failed To Get Categoris")
@@ -130,9 +134,7 @@ function CategoryPicker ({ type }:{type:TransactionType,}) {
         }
       })
 
-      const selectedCategory = categories.data?.find((category:Category) => {
-        category.name === value
-      })
+      const selectedCategory = categories.data[0]
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -146,7 +148,8 @@ function CategoryPicker ({ type }:{type:TransactionType,}) {
                 <Command onSubmit={(e) => {
                   e.preventDefault();  
                 }}>
-                    <CommandInput placeholder="Search category.." />
+                    <CommandInput placeholder="Search category..." />
+                    <CreateCategoryDialog type={type}/>
                 </Command>
             </PopoverContent>
         </Popover>
@@ -158,6 +161,6 @@ function CategoryRow({category}:{category: Category}) {
         <div className="flex items-center gap-2">
             <span role="img">{category.icon}</span>
             <span>{category.name}</span>
-        </div>
+        </div>  
     )
 }
