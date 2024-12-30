@@ -130,7 +130,7 @@ function NavbarItem({
 function Logo() {
   return (
     <div className="lg:text-2xl text-xl font-semibold bg-gradient-to-r from-[#e49932] to-[#fbc02d] bg-clip-text text-transparent">
-      BudgetTracker
+      Masroofy
     </div>
   );
 }
