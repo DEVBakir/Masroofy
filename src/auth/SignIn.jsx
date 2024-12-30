@@ -24,7 +24,7 @@ const SignIn = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen  px-4 py-6">
       <h1 className="text-3xl font-semibold text-center text-yellow-600 mb-6">
-        Welcome Back to BudgetTracker
+        Welcome Back to <span className='font-bold text-4xl'>Masroofy</span>
       </h1>
       <p className="text-lg text-gray-200 text-center mb-8 max-w-lg">
         Sign in to manage your finances, track your spending, and stay on top of your budgeting goals.

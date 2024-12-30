@@ -2,6 +2,8 @@ import { ThemeProvider } from "./components/provider/theme-provider";
 import { BrowserRouter, Outlet, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from './Navbar/Navbar';
 import Dashboard from './pages/Dashboard';
+import Manage from './pages/Manage';
+import Transaction from './pages/Transaction/Transaction';
 import Welcome from './pages/Welcome';
 import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
@@ -26,8 +28,8 @@ function App() {
             }
           >
             <Route index element={<Dashboard />} />
-            <Route path="transaction" element={<>Transaction Page</>} />
-            <Route path="manage" element={<>Manage Page</>} />
+            <Route path="transaction" element={<Transaction/>} />
+            <Route path="manage" element={<Manage />} />
             <Route path="welcome" element={<Welcome />} />
             {/* Redirect unknown routes */}
             <Route path="*" element={<Navigate to="/" />} />

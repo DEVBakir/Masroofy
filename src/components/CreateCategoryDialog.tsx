@@ -1,6 +1,6 @@
 import { TransactionType } from "@/lib/types"
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react"
+import { ReactNode, useState } from "react"
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Dialog, DialogClose, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
@@ -13,12 +13,18 @@ import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Picker from "@emoji-mart/react"
 import data from "@emoji-mart/data"
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import supabaseClient from "@/config/supabaseClient";
 import { useAuth } from "../auth/AuthContext"
+import { Category } from "@/schema";
+import { useTheme } from "next-themes";
 
 
-type Props = { type: TransactionType }
+type Props = { 
+  type: TransactionType ,
+  successCallBack : (categry : Category) => void
+  trigger? : ReactNode
+}
 
 const createCategorySchema = z.object({
     user_id: z.string(),
@@ -30,7 +36,7 @@ const createCategorySchema = z.object({
 type CreateCategorySchema = z.infer<typeof createCategorySchema>;
 
 
-function CreateCategoryDialog({ type }: Props) {
+function CreateCategoryDialog({ type , successCallBack , trigger }: Props , ) {
     const [ open, setOpen ] = useState(false);
     const { user } = useAuth();
 
@@ -41,19 +47,24 @@ function CreateCategoryDialog({ type }: Props) {
         type
       },
     });
+
+    const QueryClient = useQueryClient;
+    const theme = useTheme; 
   
     const { mutate, isPending } = useMutation({
       mutationFn: async (data: CreateCategorySchema) => {
-        const { error } = await supabaseClient
+        const { data: result , error } = await supabaseClient
           .from("Category")
-          .upsert(data);
+          .upsert(data)
         if (error) {
           throw new Error(error.message);
         }
+        return result;
       },
-      onSuccess: () => {
+      onSuccess: (data) => {
         setOpen(false); // Close the dialog after success
         form.reset(); // Reset the form
+        successCallBack(data) /// here
       },
       onError: (error) => {
         console.error("Error saving category:", error);
@@ -67,13 +78,15 @@ function CreateCategoryDialog({ type }: Props) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
+          {trigger ? trigger : 
           <Button
-            variant="ghost"
-            className="flex items-center justify-start border-b border-separate rounded-none px-3 py-3 text-muted-foreground"
-          >
-            <PlusSquare className="mr-2 h-4 w-4" />
-            Create new
-          </Button>
+          variant="ghost"
+          className="flex items-center justify-start border-b border-separate rounded-none px-3 py-3 text-muted-foreground"
+        >
+          <PlusSquare className="mr-2 h-4 w-4" />
+          Create new
+        </Button>
+        }
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
