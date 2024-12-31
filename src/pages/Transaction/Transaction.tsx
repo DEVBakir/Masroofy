@@ -49,7 +49,7 @@ const Transaction = () => {
 
             {/* Center the table in the middle of the screen */}
             <div className="flex justify-center items-center mt-20">
-                <div className="w-full max-w-6xl px-4">
+                <div className="w-full max-w-7xl px-4">
                     <TransactionTable
                         from={dateRange.from}
                         to={dateRange.to}

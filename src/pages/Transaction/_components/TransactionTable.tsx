@@ -36,7 +36,10 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
     const [transactionToUpdate, setTransactionToUpdate] = useState<Transaction | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
+    const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+    const [transactionDetails, setTransactionDetails] = useState<Transaction | null>(null);
 
+    const { register, handleSubmit, reset } = useForm();
     const { data: history, isLoading, error, refetch } = useQuery({
         queryKey: ['transactions', 'history', from, to],
         queryFn: async () => {
@@ -92,6 +95,7 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
             setIsUpdateDialogOpen(false);
             refetch();
             toast.success('Transaction updated successfully!');
+            reset();
         } catch (error) {
             console.error('Error updating transaction:', error);
             toast.error('Failed to update transaction');
@@ -119,10 +123,11 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
             toast.error('Failed to delete transaction');
         }
     };
+    
 
     return (
         <>
-            <Table className="w-full border-collapse border border-gray-300 text-center">
+            <Table className="w-full border-collapse border border-black-900 text-center">
                 <TableHeader>
                     <TableRow>
                         {['id', 'category', 'date', 'amount', 'type', 'action'].map((column) => (
@@ -146,17 +151,17 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                 <TableBody>
                     {sortedData?.map((transaction, i) => {
                         const category = Array.isArray(transaction.Category) ? transaction.Category[0] : transaction.Category;
-                        const typeClass = category.type === 'expense' ? 'bg-rose-950 border-rose-500 text-white' : 'bg-emerald-950 border-emerald-500 text-white';
+                        const typeClass = category.type === 'expense' ? 'bg-rose-950 border-rose-500 text-red-400' : 'text-green-400 bg-emerald-950 border-emerald-500 ';
 
                         return (
                             <TableRow key={transaction.id}>
                                 <TableCell>{i + 1}</TableCell>
-                                <TableCell>{category.icon} <span className="font-bold ms-2 ">{category.name}</span></TableCell>
+                                <TableCell className='size-6'>{category.icon} <span className="font-bold ms-2 ">{category.name}</span></TableCell>
                                 <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
                                 <TableCell>{transaction.amount}</TableCell>
                                 <TableCell>
-                                    <span className={`px-2 py-1 rounded-full ${typeClass}`}>
-                                        {category.type}
+                                    <span className={`px-2 py-1 rounded-xl   ${typeClass}`}>
+                                        {category.type === 'expense' ? 'Expense' : 'Income'}
                                     </span>
                                 </TableCell>
                                 <TableCell className="flex justify-center">
@@ -167,8 +172,15 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent className="text-center">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                onClick={() => {
+                                                    setTransactionDetails(transaction);
+                                                    setIsDetailsDialogOpen(true);
+                                                }}
+                                                className="hover:bg-gray-100 p-2 cursor-pointer flex justify-center"
+                                            >
+                                                Details
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 onClick={() => {
                                                     setTransactionToUpdate(transaction);
@@ -196,6 +208,27 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                 </TableBody>
             </Table>
 
+            {transactionDetails && (
+                <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle className='text-center'>Transaction Details</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-2">
+                            <p><strong>Date:</strong> {new Date(transactionDetails.date).toLocaleDateString()}</p>
+                            <p><strong>Amount:</strong> {transactionDetails.amount}</p>
+                            <p><strong>Description:</strong> {transactionDetails.description}</p>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button variant="secondary">Close</Button>
+                            </DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
+
+
             {/* Update Dialog */}
             {transactionToUpdate && (
                 <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
@@ -207,11 +240,12 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                             </DialogDescription>
                         </DialogHeader>
 
-                        <form onSubmit={handleUpdateTransaction}>
+                        <form onSubmit={handleSubmit(handleUpdateTransaction)}>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Amount</label>
                                     <Input
+                                        {...register('amount')}
                                         type="number"
                                         defaultValue={transactionToUpdate.amount}
                                         placeholder="Amount"
@@ -221,6 +255,7 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Description</label>
                                     <Input
+                                        {...register('description')}
                                         defaultValue={transactionToUpdate.description}
                                         placeholder="Description"
                                         required
@@ -229,8 +264,9 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Date</label>
                                     <Input
+                                        {...register('date')}
                                         type="date"
-                                        defaultValue={new Date(transactionToUpdate.date).toLocaleDateString()}
+                                        defaultValue={transactionToUpdate.date.split('T')[0]}
                                         required
                                     />
                                 </div>
