@@ -60,7 +60,11 @@ function TransactionTable({ from, to }: Props) {
                 </thead>
                 <tbody>
                     {history?.map((transaction) => {
-                        const category = transaction.Category; // Category could be undefined
+                        // Ensure category exists and is not an empty array
+                        const category = Array.isArray(transaction.Category) && transaction.Category.length > 0
+                            ? transaction.Category[0]
+                            : null;
+
                         const name = category?.name || 'N/A';  // Default value if name is undefined
                         const icon = category?.icon || 'N/A';  // Default value if icon is undefined
                         const type = category?.type || 'N/A';  // Default value if type is undefined
@@ -68,7 +72,7 @@ function TransactionTable({ from, to }: Props) {
                         return (
                             <tr key={transaction.id}>
                                 <td className="border p-2">{transaction.id}</td>
-                                <td className="border p-2">{transaction.date}</td>
+                                <td className="border p-2">{new Date(transaction.date).toLocaleDateString()}</td> {/* Proper date formatting */}
                                 <td className="border p-2">{transaction.amount}</td>
                                 <td className="border p-2">{name}</td>
                                 <td className="border p-2">{type}</td>
