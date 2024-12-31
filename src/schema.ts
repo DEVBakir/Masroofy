@@ -23,4 +23,5 @@ export interface Transaction {
     user_id: string;
     category_id: string;
     Category?: Pick<Category, 'name' | 'type' | 'icon'> | null; // Reference Category interface
+    type: "income" | "expense";
 }

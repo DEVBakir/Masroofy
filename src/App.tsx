@@ -8,6 +8,7 @@ import Welcome from './pages/Welcome';
 import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
 import SignIn from './auth/SignIn';
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
@@ -45,11 +46,17 @@ export default App;
 
 function Layout() {
   return (
-    <div className='relative flex h-screen w-full flex-col'>
-      <Navbar />
-      <div className="p-4">
-        <Outlet />
+      <div className='relative flex h-screen w-full flex-col'>
+        <Navbar />
+        <div>
+          <Outlet />
+        </div>
+        <Toaster richColors position="bottom-right"/>
       </div>
-    </div>
   );
 }
+
+
+
+
+

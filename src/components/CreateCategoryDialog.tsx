@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Dialog, DialogClose, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { CircleOff, PlusSquare } from "lucide-react";
+import { CircleOff, Loader2, PlusSquare } from "lucide-react";
 import { DialogContent } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "./ui/form";
@@ -17,7 +17,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import supabaseClient from "@/config/supabaseClient";
 import { useAuth } from "../auth/AuthContext"
 import { Category } from "@/schema";
-import { useTheme } from "next-themes";
+import { toast } from "sonner";
+import { useTheme } from "./provider/theme-provider";
 
 
 type Props = { 
@@ -49,29 +50,40 @@ function CreateCategoryDialog({ type , successCallBack , trigger }: Props , ) {
     });
 
     const QueryClient = useQueryClient;
-    const theme = useTheme; 
+    const themeProvider = useTheme();
+     
   
     const { mutate, isPending } = useMutation({
       mutationFn: async (data: CreateCategorySchema) => {
-        const { data: result , error } = await supabaseClient
+        const { data: result, error } = await supabaseClient
           .from("Category")
           .upsert(data)
+          .select(); // Ensure the upsert operation returns the inserted/updated rows.
+      
         if (error) {
           throw new Error(error.message);
         }
-        return result;
+      
+        // Return the first row if result is an array
+        return result[0]
       },
-      onSuccess: (data) => {
+      onSuccess: (data : Category) => {
         setOpen(false); // Close the dialog after success
         form.reset(); // Reset the form
         successCallBack(data) /// here
+        toast.success(`Category ${data?.name} created successfully 🎉`, {
+          id: "create-category",
+        });
       },
       onError: (error) => {
-        console.error("Error saving category:", error);
+        toast.error(`Something went wrong`, { id: "create-category" });
       },
     });
   
     const handleSubmit = (data: CreateCategorySchema) => {
+      toast.loading("Creating category....", {
+        id: "create-category",
+      });
       mutate(data);
     };
   
@@ -157,6 +169,7 @@ function CreateCategoryDialog({ type , successCallBack , trigger }: Props , ) {
                         </PopoverTrigger>
                         <PopoverContent className="w-full">
                           <Picker
+                            theme={themeProvider.theme}
                             data={data}
                             onEmojiSelect={(emoji: { native: string }) => {
                               field.onChange(emoji.native);
@@ -184,7 +197,7 @@ function CreateCategoryDialog({ type , successCallBack , trigger }: Props , ) {
                   </Button>
                 </DialogClose>
                 <Button type="submit" disabled={isPending}>
-                  {isPending ? "Saving..." : "Save"}
+                  {isPending ? <Loader2 className="animate-spin"/> : "Save"}
                 </Button>
               </DialogFooter>
             </form>
