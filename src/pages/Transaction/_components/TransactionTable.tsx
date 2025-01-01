@@ -13,9 +13,7 @@ function TransactionTable({ from, to }: Props) {
     const { user } = useAuth();
     const { data: history, isLoading, error } = useQuery({
         queryKey: ['transactions', 'history', from, to],
-        queryFn: async () => {
-            console.log("start fetching");
-            
+        queryFn: async () => {            
             const { data, error } = await supabaseClient
                 .from('Transaction')
                 .select(`
@@ -35,7 +33,6 @@ function TransactionTable({ from, to }: Props) {
             if (error) {
                 throw new Error(error.message);
             }
-            console.log(data);
             
             return data;
         },

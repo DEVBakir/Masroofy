@@ -63,8 +63,6 @@ export function CurrencyComboBox() {
 
       if (error) {
         console.error("Error updating user settings:", error.message);
-      } else {
-        console.log("User settings updated successfully.");
       }
     } catch (error) {
       console.error("Unexpected error:", error);
