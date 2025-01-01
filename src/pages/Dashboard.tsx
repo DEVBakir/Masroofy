@@ -522,7 +522,7 @@ const calculateDailySumsByMonth = (dataAll, uniqueYears) => {
     );
 
     // Calculate daily sums for each month
-    const monthlyData = monthsWithTransactions.map((month) => {
+    const monthlyData = monthsWithTransactions.map((month:any) => {
       // Get the number of days in the month
       const daysInMonth = new Date(year, month, 0).getDate();
 
