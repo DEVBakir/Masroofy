@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { cn } from "@/lib/utils";
 
 
 type Props = {};
@@ -453,6 +454,7 @@ export const UserTransactionsProvider = ({ children }) => {
   if(!isCurrentYearExist)
     uniqueYears.push(new Date().getFullYear())
 
+    uniqueYears.sort()
   return (
     <UserTransactions.Provider
       value={{ data, refetch, isLoading, dateRange, setDateRange, uniqueYears,dataAll,refetchAll,isLoadingAll }}
@@ -492,12 +494,12 @@ function History({userSettings} : {userSettings:UserSettings}) {
     }));
 
     // Filter transactions for the current year
-    const transactionsForYear = dataAll.filter((item) => 
-      new Date(item.date).getFullYear() === year
+    const transactionsForYear = dataAll?.filter((item) => 
+      new Date(item.date)?.getFullYear() === year
     );
 
     // Calculate sums for each month
-    transactionsForYear.forEach((transaction) => {
+    transactionsForYear?.forEach((transaction) => {
       const month = new Date(transaction.date).getMonth(); // 0-based index
       if (transaction.type === 'expense') {
         monthlySums[month].expense += transaction.amount;
@@ -559,13 +561,17 @@ const calculateDailySumsByMonth = (dataAll, uniqueYears) => {
   });
 };
 
-  let dataChart = calculateDailySumsByMonth(dataAll,uniqueYears).filter((el)=> el.year === period.year && el.monthlyData.some((month)=> month.month === (period.month + 1 )));
-  if(dataChart?.length > 0)
-    dataChart = dataChart[0].monthlyData.filter((el)=> el.month === (period.month + 1))[0].dailySums
-
-  console.log(dataChart);
+  console.log(calculateMonthlySums(dataAll,uniqueYears).filter((element)=> element.year === period.year)[0]?.monthlySums);
   
-  
+  let dataChart;
+  if(timeFrame === "month") {
+     dataChart = calculateDailySumsByMonth(dataAll,uniqueYears).filter((el)=> el.year === period.year && el.monthlyData.some((month)=> month.month === (period.month + 1 )));
+    if(dataChart?.length > 0)
+      dataChart = dataChart[0].monthlyData.filter((el)=> el.month === (period.month + 1))[0].dailySums 
+  }
+  else { 
+    dataChart=calculateMonthlySums(dataAll,uniqueYears).filter((element)=> element.year === period.year)[0]?.monthlySums
+  }
   return (
     <div className="container mx-auto px-4 lg:px-0">
       <h2 className="mt-12 text-3xl font-bold">
@@ -612,10 +618,8 @@ const calculateDailySumsByMonth = (dataAll, uniqueYears) => {
                         <CartesianGrid strokeDasharray="5 5" strokeOpacity={0.2} vertical={false} />
                         <XAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} padding={{left: 5, right: 5}}
                           dataKey={(data)=> {
-                            console.log(data);
-                            
-                            const {day} = data;
-                            const date = new Date(period.year,period.month,day || 1);
+                            const {day,month} = data;
+                            const date = new Date(period.year,month - 1 || period.month,day  || 1);
                             if(timeFrame === "month")
                               return date.toLocaleDateString("default",{
                                 day: "2-digit"
@@ -632,8 +636,9 @@ const calculateDailySumsByMonth = (dataAll, uniqueYears) => {
                         <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
                         <Bar dataKey={"income"} label="Income" fill="url(#incomeBar)" radius={4} className="cursor-pointer" />
                         <Bar dataKey={"expense"} label="Expense" fill="url(#expenseBar)" radius={4} className="cursor-pointer" />
-                      
-
+                        <Tooltip cursor={{opacity:0.1}} content={props => (
+                          <CustomTooltip formatter={formatter} {...props}/>
+                          )}/>
                       </BarChart>
                     </ResponsiveContainer>
                   )
@@ -648,14 +653,45 @@ const calculateDailySumsByMonth = (dataAll, uniqueYears) => {
     </div>
   )
 }
-//<Tooltip cursor={{opacity:0.1}} content={props => (
- // <CustomTooltip formatter={formatter} {...props}/>
-//)}/>
-function CustomTooltip({active,payload,formatter}) {
+
+function CustomTooltip({active,payload,formatter}:any) {
+  const {expense,income} = payload.length > 0 ? payload[0].payload : {expense:0, income:0}
+  
+  
   if(!active || !payload || payload.length === 0) return null
+  
   return (
     <div className="min-w-[300px] rounded border bg-background p-4">
-         
+         <TooltipRow formatter={formatter} label={"Expense"} value={expense} bgColor={"bg-red-500"} textColors="text-red-500"/>
+         <TooltipRow formatter={formatter} label={"Income"} value={income} bgColor={"bg-emerald-500"} textColors="text-emerald-500"/>
+         <TooltipRow formatter={formatter} label={"Balance"} value={income - expense} bgColor={"bg-grey-100"} textColors="text-foreground"/>
+    </div>
+  )
+}
+
+function TooltipRow({formatter ,label, value,bgColor,textColors}) {
+  const formattingFn = useCallback((value)=> {
+    return formatter.format(value)
+  },[])
+  return(
+    <div className="flex items-center gap-2">
+      <div className={cn("h-4 w-4 rounded-full",bgColor)}>
+        </div>
+          <div className="flex w-full justify-between">
+            <p className="text-sm text-muted-foreground">
+              {label}
+            </p>
+            <div className={cn("text-sm font-bold",textColors)}>
+              <CountUp
+                duration={0.5}
+                preserveValue
+                end={value}
+                decimal={"0"}
+                formattingFn={formattingFn}
+                className="text-sm"
+              />
+            </div>
+          </div>
     </div>
   )
 }

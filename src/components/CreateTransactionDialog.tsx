@@ -45,7 +45,7 @@ function CreateTransactionDialog({ trigger, type, successCallBack }: Props) {
     const [open , setOpen] = useState(false);
     const [category_id , setCategory_id] = useState(null);
     const {user} = useAuth();
-    const {refetch} = useContext(UserTransactions)
+    const {refetch,refetchAll} = useContext(UserTransactions)
     const form = useForm<CreateTransactionSchema>({
         resolver: zodResolver(createTransactionSchema),
         defaultValues: {
@@ -56,29 +56,37 @@ function CreateTransactionDialog({ trigger, type, successCallBack }: Props) {
         },
       });
       
+    
       const { mutate, isPending } = useMutation({
         mutationFn: async (data: CreateTransactionSchema) => {
-        delete data.category                        
+          // Format the date to `YYYY-MM-DD`
+          const formattedDate = data.date ? format(data.date, 'yyyy-MM-dd') : null;
+      
+          delete data.category; // Remove the category field as required
+      
           const { data: result, error } = await supabaseClient
             .from("Transaction")
             .insert({
-                ...data,category_id
+              ...data,
+              date: formattedDate, // Use the formatted date
+              category_id,
             })
             .select(); // Ensure the upsert operation returns the inserted/updated rows.
-        
+      
           if (error) {
             throw new Error(error.message);
           }
-        
+      
           // Return the first row if result is an array
-          return result[0]
+          return result[0];
         },
-        onSuccess: (data : Transaction) => {
+        onSuccess: (data: Transaction) => {
           setOpen((prev) => !prev); // Close the dialog after success
           form.reset(); // Reset the form
           refetch();
-          successCallBack() 
-          
+          refetchAll();
+          successCallBack();
+      
           toast.success(`Transaction ${data?.description} created successfully 🎉`, {
             id: "create-transaction",
           });
@@ -87,6 +95,8 @@ function CreateTransactionDialog({ trigger, type, successCallBack }: Props) {
           toast.error(`Something went wrong`, { id: "create-transaction" });
         },
       });
+      
+
     const OnSubmit = (data: CreateTransactionSchema) => {
         
         toast.loading("Creating Transaction....", {
