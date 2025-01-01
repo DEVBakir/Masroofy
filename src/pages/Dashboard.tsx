@@ -337,25 +337,27 @@ function CategoriesCard({ data, type, formatter }: {
             <ScrollArea className="h-60 w-full px-4">
               <div className="flex w-full flex-col gap-4 p-4">
                 {
-                  groupedEntries.map(([categoryId, { transactions }]) => {
+                  groupedEntries.map(([categoryId, details]: [string, any]) => {
+                    const transactions = details.transactions as any[]; // Cast transactions to any[]
                     const category = transactions[0]?.Category; // Assuming category data exists
                     const amount = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
-                    const percentage = amount * 100 /total ;
-                                        
+                    const percentage = (amount * 100) / total;
+                  
                     return (
                       <div key={categoryId} className="flex flex-col gap-2">
                         <div className="flex items-center justify-between">
                           <span className="flex items-center text-gray-400">
-                            {category.icon} {category.name}
-                            <span className="ml-2 text-sm text-muted-foreground ">
+                            {category?.icon} {category?.name}
+                            <span className="ml-2 text-sm text-muted-foreground">
                               ({percentage.toFixed(2)}%)
                             </span>
                           </span>
-                          <span className="text-sm text-grey-400 ">
+                          <span className="text-sm text-grey-400">
                             {formatter.format(amount)}
                           </span>
                         </div>
-                        <Progress value={percentage}
+                        <Progress
+                          value={percentage}
                           indicator={type === "income" ? "bg-emerald-500" : "bg-red-500"}
                         />
                       </div>
