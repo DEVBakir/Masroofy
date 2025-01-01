@@ -20,9 +20,9 @@ function Manage({}: Props) {
     <>
       {/* header  */}
       <div className="border-b bg-card ">
-        <div className="container flex flex-wrap items-center justify-between gap-6 py-8">
-          <div className="ps-16">
-            <p className="text-3xl font-bold">Manage</p>
+        <div className="container flex flex-wrap items-center md:justify-between justify-center  gap-6 py-8 mx-auto px-4 lg:px-0">
+          <div className="">
+            <p className="text-3xl font-bold md:text-start text-center">Manage</p>
             <p className="text-muted-foreground ">
               Manage Your Account Settings And Categories
             </p>
@@ -30,7 +30,7 @@ function Manage({}: Props) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-4 container py-8 mx-auto px-4 lg:px-0">
         <Card>
           <CardHeader>
             <CardTitle>Currency</CardTitle>

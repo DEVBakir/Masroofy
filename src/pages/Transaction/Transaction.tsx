@@ -25,9 +25,9 @@ const Transaction = () => {
 
     return (
         <>
-            <div className="border-b bg-card ">
-                <div className="container flex flex-wrap items-center justify-between gap-6 py-8">
-                    <div className="ps-16">
+            <div className="border-b bg-card">
+                <div className="container flex flex-wrap items-center md:justify-between justify-center gap-6 py-8 mx-auto px-4 lg:px-0 ">
+                    <div className="">
                         <p className="text-3xl font-bold">Transaction History</p>
                     </div>
                     <DateRangePicker
@@ -48,8 +48,8 @@ const Transaction = () => {
             </div>
 
             {/* Center the table in the middle of the screen */}
-            <div className="flex justify-center items-center mt-20">
-                <div className="w-full max-w-7xl px-4">
+            <div className="flex container justify-center items-center mt-20 mx-auto px-4 lg:px-0" >
+                <div className="w-full">
                     <TransactionTable
                         from={dateRange.from}
                         to={dateRange.to}
