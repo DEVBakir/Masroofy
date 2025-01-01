@@ -42,7 +42,7 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
     const { register, handleSubmit, reset } = useForm();
     const { data: history, isLoading, error, refetch } = useQuery({
         queryKey: ['transactions', 'history', from, to],
-        queryFn: async () => {
+        queryFn: async () => {            
             const { data, error } = await supabaseClient
                 .from('Transaction')
                 .select(`

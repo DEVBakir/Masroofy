@@ -1,5 +1,5 @@
 import { TransactionType } from "@/lib/types"
-import { ReactNode, useState } from "react"
+import { ReactNode, useContext, useState } from "react"
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { cn } from "@/lib/utils"
 import { useForm } from "react-hook-form"
@@ -20,11 +20,12 @@ import { CalendarIcon, Check, Loader2, PlusSquare } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { Calendar } from "./ui/calendar"
+import { UserTransactions } from "@/pages/Dashboard"
 
 type Props = {
     trigger: ReactNode,
     type: TransactionType,
-    successCallBack: () => void
+    successCallBack?: () => void
 }
 
 const createTransactionSchema = z.object({
@@ -44,7 +45,7 @@ function CreateTransactionDialog({ trigger, type, successCallBack }: Props) {
     const [open , setOpen] = useState(false);
     const [category_id , setCategory_id] = useState(null);
     const {user} = useAuth();
-
+    const {refetch} = useContext(UserTransactions)
     const form = useForm<CreateTransactionSchema>({
         resolver: zodResolver(createTransactionSchema),
         defaultValues: {
@@ -75,7 +76,9 @@ function CreateTransactionDialog({ trigger, type, successCallBack }: Props) {
         onSuccess: (data : Transaction) => {
           setOpen((prev) => !prev); // Close the dialog after success
           form.reset(); // Reset the form
+          refetch();
           successCallBack() 
+          
           toast.success(`Transaction ${data?.description} created successfully 🎉`, {
             id: "create-transaction",
           });
@@ -84,7 +87,6 @@ function CreateTransactionDialog({ trigger, type, successCallBack }: Props) {
           toast.error(`Something went wrong`, { id: "create-transaction" });
         },
       });
-      
     const OnSubmit = (data: CreateTransactionSchema) => {
         
         toast.loading("Creating Transaction....", {

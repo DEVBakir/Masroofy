@@ -14,7 +14,6 @@ const SignIn = () => {
     try {
       const { data, error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
       if (error) throw error;
-      console.log('User signed in:', data.user);
       setUser(data.user);
     } catch (error) {
       console.error('Google Sign-In Error:', error.message);

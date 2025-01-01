@@ -20,8 +20,6 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       } else if (userdata) {
         setUser(userdata.user);  
-        console.log('User data:', userdata);
-        console.log('this from state user',user);
         setLoading(false);
         // navigate('/');
       } else {
