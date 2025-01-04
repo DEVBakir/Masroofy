@@ -15,7 +15,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AlignCenter, Menu } from "lucide-react";
-import logo from "../assets/logo.png"
+const logo = require('./assets/logo.png');
 import supabaseClient from "@/config/supabaseClient";
 
 type Props = {};
