@@ -1,4 +1,22 @@
-# React + TypeScript + Vite
+# Budget Tracker Masroofy
+
+## Introduction
+
+Budget Tracker is a web application developed by **Hadj Said Bakir** and **Fekhar Mensour** of **Group 2**
+
+### Technologies Used
+
+The project leverages modern web development technologies and libraries to deliver a seamless user experience:
+
+- **React**: For building the interactive user interface.
+- **TypeScript**: To ensure type safety and enhance code maintainability.
+- **Shadcn**: For customizable and consistent styling of components.
+- **Supabase**: A backend-as-a-service platform for authentication and database management.
+- **Recharts**: To create visually appealing charts for tracking financial data.
+- **Additional Libraries**: Used for emoji integration and form validation.
+
+
+# React + TypeScript + Vite 
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
