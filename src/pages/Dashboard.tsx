@@ -616,22 +616,40 @@ const calculateDailySumsByMonth = (dataAll, uniqueYears) => {
                           </linearGradient> 
                         </defs> 
                         <CartesianGrid strokeDasharray="5 5" strokeOpacity={0.2} vertical={false} />
-                        <XAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} padding={{left: 5, right: 5}}
-                          dataKey={(data)=> {
-                            const {day,month} = data;
-                            const date = new Date(period.year,month - 1 || period.month,day  || 1);
-                            if(timeFrame === "month")
-                              return date.toLocaleDateString("default",{
-                                day: "2-digit"
-                              })
-                            else
-                            return date.toLocaleDateString("default",{
-                              month: "long"
-                            })
+                        <XAxis
+                          stroke="#888888"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                          padding={{ left: 5, right: 5 }}
+                          dataKey={(data) => {
+                            const { day, month } = data;
+                            const date = new Date(
+                              period.year,
+                              month - 1 || period.month,
+                              day || 1
+                            );
 
-                          }
-                          }
-                        /> 
+                            let formattedLabel;
+
+                            if (timeFrame === "month") {
+                              formattedLabel = date.toLocaleDateString("default", {
+                                day: "2-digit",
+                              });
+                            } else {
+                              formattedLabel = date.toLocaleDateString("default", {
+                                month: "long",
+                              });
+                            }
+
+                            // Truncate or abbreviate if the label exceeds 7 characters
+                            if (formattedLabel.length > 7) {
+                              formattedLabel = `${formattedLabel.slice(0, 6)}…`; // Adds an ellipsis for longer labels
+                            }
+
+                            return formattedLabel;
+                          }}
+                        />
 
                         <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
                         <Bar dataKey={"income"} label="Income" fill="url(#incomeBar)" radius={4} className="cursor-pointer" />

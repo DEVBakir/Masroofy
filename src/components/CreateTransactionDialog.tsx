@@ -34,7 +34,7 @@ const createTransactionSchema = z.object({
     amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
     description: z.string().min(1, "Description is required"),
     date: z.date(),
-    category: z.string(),
+    category: z.string().optional(),
     type: z.enum(["income", "expense"]),
   });
   

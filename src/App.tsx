@@ -46,7 +46,7 @@ export default App;
 
 function Layout() {
   return (
-      <div className='relative flex h-screen w-full flex-col'>
+      <div className='relative flex  w-full flex-col mb-[100px]'>
         <Navbar />
         <div>
           <Outlet />

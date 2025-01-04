@@ -15,6 +15,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AlignCenter, Menu } from "lucide-react";
+import logo from "../assets/logo.png"
 import supabaseClient from "@/config/supabaseClient";
 
 type Props = {};
@@ -129,8 +130,9 @@ function NavbarItem({
 // Logo
 function Logo() {
   return (
-    <div className="lg:text-2xl text-xl font-semibold bg-gradient-to-r from-[#e49932] to-[#fbc02d] bg-clip-text text-transparent">
-      Masroofy
+    <div className="lg:text-3xl text-2xl font-semibold bg-gradient-to-r from-[#e49932] to-[#fbc02d] bg-clip-text text-transparent flex items-center">
+      <img src={logo} className="w-[60px] h-[60px] mr-2 relative bottom-1"/>
+      <span>Masroofy</span>
     </div>
   );
 }

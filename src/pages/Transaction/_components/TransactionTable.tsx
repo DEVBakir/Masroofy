@@ -27,6 +27,7 @@ interface Transaction {
     description: string;
     user_id: string;
     category_id: string;
+    type:string;
     Category: { name: string; type: string; icon: string }[];
 }
 
@@ -53,6 +54,7 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                     description,
                     user_id,
                     category_id,
+                    type,
                     Category (name, type, icon)
                 `)
                 .eq('user_id', user.id)
@@ -150,18 +152,18 @@ function TransactionTable({ from, to, sortConfig, onSort }: Props) {
                 </TableHeader>
                 <TableBody>
                     {sortedData?.map((transaction, i) => {
-                        const category = Array.isArray(transaction.Category) ? transaction.Category[0] : transaction.Category;
-                        const typeClass = category.type === 'expense' ? 'bg-rose-950 border-rose-500 text-red-400' : 'text-green-400 bg-emerald-950 border-emerald-500 ';
+                        const category = Array.isArray(transaction?.Category) ? transaction?.Category[0] : transaction?.Category;
+                        const typeClass = transaction.type === 'expense' ? 'bg-rose-950 border-rose-500 text-red-400' : 'text-green-400 bg-emerald-950 border-emerald-500 ';
 
                         return (
                             <TableRow key={transaction.id}>
                                 <TableCell>{i + 1}</TableCell>
-                                <TableCell className='size-6'>{category.icon} <span className="font-bold ms-2 ">{category.name}</span></TableCell>
+                                <TableCell className='size-6'>{category?.icon} <span className="font-bold ms-2 ">{category?.name}</span></TableCell>
                                 <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
                                 <TableCell>{transaction.amount}</TableCell>
                                 <TableCell>
                                     <span className={`px-2 py-1 rounded-xl   ${typeClass}`}>
-                                        {category.type === 'expense' ? 'Expense' : 'Income'}
+                                        {transaction.type === 'expense' ? 'Expense' : 'Income'}
                                     </span>
                                 </TableCell>
                                 <TableCell className="flex justify-center">

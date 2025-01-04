@@ -24,6 +24,9 @@ import supabaseClient from "@/config/supabaseClient"
 import { UserSettings } from "@/schema"
 import { useEffect, useState } from "react"
 import { useAuth } from "../auth/AuthContext";
+import SkeletonWrapper from "./SkeleonWrapper"
+import { toast } from "sonner"
+import { useLocation } from "react-router-dom"
 
 
 export function CurrencyComboBox() {
@@ -33,9 +36,9 @@ export function CurrencyComboBox() {
   const user_id = user?.id
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const [selectedOption, setSelectedOption] = useState<Currency | null>(
-    Currencies[0]
-  )
+  const [selectedOption, setSelectedOption] = useState<Currency | null>(null)
+  console.log(selectedOption);
+  
 
   const userSettings = useQuery<UserSettings>({
     queryKey: ["userSettings"],
@@ -53,38 +56,51 @@ export function CurrencyComboBox() {
     },
   });
 
-  async function updateUserSettings() {
-    if (!selectedOption) return;
+  useEffect(() => {
+    if(userSettings.isSuccess)
+      console.log("Hey i am here");
+      
+      setSelectedOption(
+        Currencies.find((priority) => priority.value === userSettings?.data?.currency)
+      ) 
+  }, [userSettings.isSuccess, userSettings.data]);
+  
 
-    try {
-      const { error } = await supabaseClient
-        .from("UserSettings")
-        .upsert({ user_id, currency: selectedOption.value });
-
-      if (error) {
-        console.error("Error updating user settings:", error.message);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-    }
-  }
+  const {mutate,isPending} = useMutation({
+    mutationFn: async () => {
+      const { data,error } = await supabaseClient
+      .from("UserSettings")
+      .upsert({ user_id, currency: selectedOption.value })      
+    },
+    onSuccess: () => {
+      toast.success(`Currency Changed successfully 🎉`, {
+        id: "change-currency",
+      });
+    },
+    onError: (error) => {
+      toast.error(`Something went wrong`, { id: "change-currency" });
+    },
+  })
 
   useEffect(()=> {
-    updateUserSettings();
+    if(userSettings.isFetched)
+      mutate();
   },[selectedOption])
 
   if (isDesktop) {
     return (
+      <SkeletonWrapper isLoading={userSettings.isLoading}>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-full justify-start font-semibold">
               {selectedOption ? <>{selectedOption.label}</> : <>+ Set currency</>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0" align="start">
-            <OptionsList setOpen={setOpen} setSelectedOption={setSelectedOption} />
-          </PopoverContent>
-        </Popover>    
+            <PopoverContent className="w-[200px] p-0" align="start">
+              <OptionsList setOpen={setOpen} setSelectedOption={setSelectedOption} />
+            </PopoverContent>
+        </Popover>   
+        </SkeletonWrapper> 
     )
   }
 
