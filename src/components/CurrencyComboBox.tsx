@@ -72,18 +72,9 @@ export function CurrencyComboBox() {
       .from("UserSettings")
       .upsert({ user_id, currency: selectedOption.value })      
     },
-    onSuccess: () => {
-      toast.success(`Currency Changed successfully 🎉`, {
-        id: "change-currency",
-      });
-    },
-    onError: (error) => {
-      toast.error(`Something went wrong`, { id: "change-currency" });
-    },
   })
 
   useEffect(()=> {
-    if(userSettings.isFetched)
       mutate();
   },[selectedOption])
 

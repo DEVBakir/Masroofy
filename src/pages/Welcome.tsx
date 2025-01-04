@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Link } from "react-router-dom"
 import { useAuth } from "../auth/AuthContext"
+import Loading from "./Loading"
 
 type Props = {}
 
@@ -11,7 +12,7 @@ function Welcome({}: Props) {
   const { user, loading, error } = useAuth(); // Get user, loading, and error from context
 
   if (loading) {
-    return <div>Loading...</div>; // Optionally show a loading spinner or message
+    return <Loading /> // Optionally show a loading spinner or message
   }
 
   if (error) {
